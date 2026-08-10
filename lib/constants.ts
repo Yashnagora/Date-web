@@ -1,4 +1,4 @@
-export const WHATSAPP_LINK = "https://wa.me/91XXXXXXXXXX";
+export const WHATSAPP_LINK = "https://www.instagram.com/its_yash._24?igsh=eXEycXJ3YTZ2enNq";
 
 export const romanticImages = {
   home: {

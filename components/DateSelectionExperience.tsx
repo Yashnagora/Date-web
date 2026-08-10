@@ -3,12 +3,17 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { CalendarDays, Clock, Heart } from "lucide-react";
+import { CalendarDays, Check, Clock, Copy, Heart, User } from "lucide-react";
 
 import { AnimatedButton } from "@/components/AnimatedButton";
 import { GlassCard } from "@/components/GlassCard";
 import { PageTransition } from "@/components/PageTransition";
-import { formatPlanDate, useDatePlan } from "@/lib/date-plan";
+import {
+  copyPlanToClipboard,
+  formatPlanDate,
+  notifyPlan,
+  useDatePlan
+} from "@/lib/date-plan";
 import { cn } from "@/lib/utils";
 
 const TIME_SLOTS = [
@@ -32,21 +37,40 @@ export function DateSelectionExperience() {
   const router = useRouter();
   const prefersReducedMotion = useReducedMotion();
   const { savePlan } = useDatePlan();
+  const [name, setName] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState<TimeSlot | "">("");
   const [confirmed, setConfirmed] = useState(false);
+  const [copied, setCopied] = useState(false);
 
-  const canSetDate = Boolean(selectedDate && selectedTime);
+  const trimmedName = name.trim();
+  const canSetDate = Boolean(trimmedName && selectedDate && selectedTime);
+  const confirmedPlan = {
+    name: trimmedName || undefined,
+    date: selectedDate,
+    time: selectedTime,
+    savedAt: Date.now()
+  };
 
-  const handleSetDate = () => {
+  const handleSetDate = async () => {
     if (!canSetDate) return;
-    savePlan({ date: selectedDate, time: selectedTime });
+    savePlan({ name: trimmedName || undefined, date: selectedDate, time: selectedTime });
     setConfirmed(true);
+    // Notify site owner instantly if ntfy is configured.
+    void notifyPlan(confirmedPlan);
   };
 
   const handleContinue = () => {
     const delay = prefersReducedMotion ? 200 : 520;
     window.setTimeout(() => router.push("/yay"), delay);
+  };
+
+  const handleCopy = async () => {
+    const ok = await copyPlanToClipboard(confirmedPlan);
+    if (ok) {
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
+    }
   };
 
   return (
@@ -67,6 +91,7 @@ export function DateSelectionExperience() {
                 transition={{ type: "spring", stiffness: 240, damping: 18 }}
                 className="flex justify-center"
               >
+                
                 <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl border border-rose-200/70 bg-gradient-to-br from-rose-100 to-pink-200 shadow-glow dark:border-rose-400/20 dark:from-rose-950/60 dark:to-fuchsia-950/60">
                   <span className="text-3xl" aria-hidden="true">
                     📅
@@ -128,63 +153,100 @@ export function DateSelectionExperience() {
                 </div>
               </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.22, ease: "easeOut" }}
-                className="space-y-2"
-              >
-                <label
-                  htmlFor="time-select"
-                  className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200"
+                <motion.div
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.22, ease: "easeOut" }}
+                  className="space-y-2"
                 >
-                  What Time? <span aria-hidden="true">⏰</span>
-                </label>
-                <div className="relative">
-                  <select
-                    id="time-select"
-                    value={selectedTime}
-                    onChange={(event) =>
-                      setSelectedTime(event.target.value as TimeSlot | "")
-                    }
-                    className={cn(
-                      "block w-full appearance-none rounded-xl border border-rose-100/80 bg-white/85",
-                      "px-4 py-3.5 pr-11 text-sm text-slate-800 shadow-sm outline-none transition",
-                      "focus:border-rose-300 focus:ring-4 focus:ring-rose-200/50",
-                      "dark:border-white/10 dark:bg-white/5 dark:text-slate-100",
-                      "dark:focus:border-rose-400/50 dark:focus:ring-rose-500/20",
-                      "h-[48px]",
-                      !selectedTime && "text-slate-400 dark:text-slate-500"
-                    )}
+                  <label
+                    htmlFor="time-select"
+                    className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200"
                   >
-                    <option value="" disabled>
-                      Select a time…
-                    </option>
-                    {TIME_SLOTS.map((slot) => (
-                      <option key={slot} value={slot} className="text-slate-800">
-                        {slot}
+                    What Time? <span aria-hidden="true">⏰</span>
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="time-select"
+                      value={selectedTime}
+                      onChange={(event) =>
+                        setSelectedTime(event.target.value as TimeSlot | "")
+                      }
+                      className={cn(
+                        "block w-full appearance-none rounded-xl border border-rose-100/80 bg-white/85",
+                        "px-4 py-3.5 pr-11 text-sm text-slate-800 shadow-sm outline-none transition",
+                        "focus:border-rose-300 focus:ring-4 focus:ring-rose-200/50",
+                        "dark:border-white/10 dark:bg-white/5 dark:text-slate-100",
+                        "dark:focus:border-rose-400/50 dark:focus:ring-rose-500/20",
+                        "h-[48px]",
+                        !selectedTime && "text-slate-400 dark:text-slate-500"
+                      )}
+                    >
+                      <option value="" disabled>
+                        Select a time…
                       </option>
-                    ))}
-                  </select>
-                  <Clock
-                    className="pointer-events-none absolute right-4 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-rose-400 dark:text-rose-300"
-                    strokeWidth={1.8}
-                    aria-hidden="true"
-                  />
-                  <svg
-                    className="pointer-events-none absolute right-10 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-slate-400"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.38a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"
-                      clipRule="evenodd"
+                      {TIME_SLOTS.map((slot) => (
+                        <option key={slot} value={slot} className="text-slate-800">
+                          {slot}
+                        </option>
+                      ))}
+                    </select>
+                    <Clock
+                      className="pointer-events-none absolute right-4 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-rose-400 dark:text-rose-300"
+                      strokeWidth={1.8}
+                      aria-hidden="true"
                     />
-                  </svg>
-                </div>
-              </motion.div>
+                    <svg
+                      className="pointer-events-none absolute right-10 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-slate-400"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.38a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
+                  className="space-y-2"
+                >
+                  <label
+                    htmlFor="name-input"
+                    className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200"
+                  >
+                    What is your name? <span aria-hidden="true">💖</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="name-input"
+                      type="text"
+                      autoComplete="name"
+                      value={name}
+                      onChange={(event) => setName(event.target.value)}
+                      placeholder="Enter your name…"
+                      className={cn(
+                        "block w-full appearance-none rounded-xl border border-rose-100/80 bg-white/85",
+                        "px-4 py-3.5 pr-11 text-sm text-slate-800 shadow-sm outline-none transition",
+                        "placeholder:text-slate-400",
+                        "focus:border-rose-300 focus:ring-4 focus:ring-rose-200/50",
+                        "dark:border-white/10 dark:bg-white/5 dark:text-slate-100 dark:placeholder:text-slate-500",
+                        "dark:focus:border-rose-400/50 dark:focus:ring-rose-500/20",
+                        "h-[48px]"
+                      )}
+                    />
+                    <User
+                      className="pointer-events-none absolute right-4 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-rose-400 dark:text-rose-300"
+                      strokeWidth={1.8}
+                      aria-hidden="true"
+                    />
+                  </div>
+                </motion.div>
 
               <motion.div
                 initial={{ opacity: 0, y: 18 }}
@@ -235,6 +297,7 @@ export function DateSelectionExperience() {
                   IT&apos;S A DATE! <span aria-hidden="true">💕</span>
                 </h2>
                 <p className="text-lg text-slate-700 dark:text-slate-200 sm:text-xl">
+                  {trimmedName ? <>Thank you <span className="font-semibold text-rose-700 dark:text-rose-300">{trimmedName}</span> — </> : null}
                   Can&apos;t wait for our date <span aria-hidden="true">🥰</span>
                 </p>
               </motion.div>
@@ -245,8 +308,17 @@ export function DateSelectionExperience() {
                 transition={{ duration: 0.5, delay: 0.32, ease: "easeOut" }}
                 className="mx-auto max-w-md rounded-2xl border border-rose-100/80 bg-gradient-to-br from-rose-50/80 to-pink-100/70 p-5 shadow-sm dark:border-white/10 dark:from-rose-950/40 dark:to-fuchsia-950/40"
               >
-                <div className="flex items-center justify-around gap-4 text-left sm:text-center">
+                <div className="grid grid-cols-1 items-stretch gap-3 sm:grid-cols-3 sm:text-center">
                   <div className="space-y-1">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-rose-500 dark:text-rose-300">
+                      Name
+                    </p>
+                    <p className="font-[family-name:var(--font-display)] text-xl text-slate-800 dark:text-slate-100 sm:text-2xl">
+                      {trimmedName}
+                    </p>
+                  </div>
+                  <div className="hidden h-24 w-px self-center justify-self-center bg-rose-200/70 dark:bg-rose-200/15 sm:block" />
+                  <div className="space-y-1 sm:col-start-2">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-rose-500 dark:text-rose-300">
                       Day
                     </p>
@@ -254,8 +326,8 @@ export function DateSelectionExperience() {
                       {formatPlanDate(selectedDate)}
                     </p>
                   </div>
-                  <div className="h-12 w-px bg-rose-200/70 dark:bg-rose-200/15" />
-                  <div className="space-y-1">
+                  <div className="hidden h-24 w-px self-center justify-self-center bg-rose-200/70 dark:bg-rose-200/15 sm:block" />
+                  <div className="space-y-1 sm:col-start-3 sm:row-start-1">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-rose-500 dark:text-rose-300">
                       Time
                     </p>
@@ -269,9 +341,33 @@ export function DateSelectionExperience() {
               <motion.div
                 initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.52, ease: "easeOut" }}
-                className="mx-auto max-w-sm pt-2"
+                transition={{ duration: 0.5, delay: 0.48, ease: "easeOut" }}
+                className="mx-auto max-w-sm pt-2 space-y-3"
               >
+                <button
+                  type="button"
+                  onClick={handleCopy}
+                  className={cn(
+                    "inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-full border",
+                    "border-rose-200/70 bg-white/80 px-5 py-2.5 text-sm font-semibold text-rose-700 shadow-sm transition",
+                    "hover:bg-white hover:-translate-y-0.5 hover:shadow-md",
+                    "dark:border-white/10 dark:bg-white/5 dark:text-rose-200 dark:hover:bg-white/10",
+                    "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-rose-200/60"
+                  )}
+                >
+                  {copied ? (
+                    <>
+                      <Check className="h-4 w-4 text-emerald-500" />
+                      <span className="text-emerald-600 dark:text-emerald-300">Copied! Now paste on Instagram 💌</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-4 w-4" />
+                      <span>Copy date details</span>
+                    </>
+                  )}
+                </button>
+
                 <AnimatedButton
                   type="button"
                   onClick={handleContinue}
@@ -281,8 +377,8 @@ export function DateSelectionExperience() {
                 >
                   okayyy let&apos;s go! ✨
                 </AnimatedButton>
-                <p className="mt-3 text-center text-xs text-slate-500 dark:text-slate-400">
-                  (whenever you&apos;re ready 💕)
+                <p className="mt-1 text-center text-xs text-slate-500 dark:text-slate-400">
+                  Copy first → send on Instagram, then continue for extra sparkle ✨
                 </p>
               </motion.div>
 

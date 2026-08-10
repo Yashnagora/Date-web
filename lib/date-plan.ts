@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 export const DATE_PLAN_STORAGE_KEY = "romantic-date-plan-v1";
 
 export type DatePlan = {
+  name?: string;
   date?: string;
   time?: string;
   savedAt?: number;
@@ -33,6 +34,7 @@ export function readDatePlan(): DatePlan {
 
     const parsed = JSON.parse(raw) as DatePlan;
     return {
+      name: typeof parsed.name === "string" && parsed.name.trim() ? parsed.name.trim() : undefined,
       date: typeof parsed.date === "string" ? parsed.date : undefined,
       time: typeof parsed.time === "string" ? parsed.time : undefined,
       savedAt: typeof parsed.savedAt === "number" ? parsed.savedAt : undefined
@@ -76,6 +78,77 @@ export function formatPlanShortDate(dateValue?: string): string {
     month: "2-digit",
     year: "numeric"
   });
+}
+
+export function buildPlanMessage(plan: DatePlan, options?: { emojis?: boolean }): string {
+  const withEmoji = options?.emojis ?? true;
+  const hasName = Boolean(plan.name);
+  const hasDate = Boolean(plan.date);
+  const hasTime = Boolean(plan.time);
+
+  const parts: string[] = [];
+
+  if (!hasDate && !hasTime && !hasName) {
+    return withEmoji
+      ? "No date and time selected yet 💭"
+      : "No date and time selected yet.";
+  }
+
+  if (withEmoji) parts.push("It's a DATE! 💕");
+  else parts.push("It's a DATE!");
+
+  if (hasName) {
+    parts.push(withEmoji ? `👤 ${plan.name}` : plan.name!);
+  }
+  if (hasDate) {
+    parts.push(withEmoji ? `📅 ${formatPlanDate(plan.date)}` : formatPlanDate(plan.date!));
+  }
+  if (hasTime) {
+    parts.push(withEmoji ? `⏰ ${plan.time}` : plan.time!);
+  }
+
+  if (withEmoji) parts.push("Can't wait! 💖");
+
+  return parts.join("\n");
+}
+
+export async function copyPlanToClipboard(plan: DatePlan): Promise<boolean> {
+  if (typeof navigator === "undefined" || !navigator.clipboard) {
+    return false;
+  }
+  try {
+    await navigator.clipboard.writeText(buildPlanMessage(plan));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Optional: send an instant push notification to your phone via ntfy.sh (free, no signup).
+ *
+ * 1) Install the ntfy app on your phone (Android / iOS).
+ * 2) Choose a hard-to-guess TOPIC NAME, e.g. "yash-date-site-7x3q".
+ * 3) Subscribe to that topic inside the ntfy app.
+ * 4) Paste the topic into the NTFY_TOPIC constant below.
+ *
+ * From then on: whenever someone picks a date on the site, your phone buzzes instantly 📳.
+ */
+export const NTFY_TOPIC = "yash-date-site-7x3q"; // e.g. "yash-date-site-7x3q"
+
+export async function notifyPlan(plan: DatePlan): Promise<boolean> {
+  if (!NTFY_TOPIC) return false;
+  if (typeof fetch === "undefined") return false;
+  try {
+    await fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
+      method: "POST",
+      headers: { Title: "💖 Someone picked a date!" },
+      body: buildPlanMessage(plan)
+    });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export function useDatePlan(): UseDatePlanReturn {

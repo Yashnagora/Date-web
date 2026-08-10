@@ -1,19 +1,29 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { CalendarDays, Clock, Heart, MessageCircleHeart } from "lucide-react";
+import { CalendarDays, Check, Clock, Copy, Heart, Instagram, User } from "lucide-react";
 
 import { AnimatedButton } from "@/components/AnimatedButton";
 import { GlassCard } from "@/components/GlassCard";
 import { PageTransition } from "@/components/PageTransition";
-import { formatPlanDate, useDatePlan } from "@/lib/date-plan";
-import { WHATSAPP_LINK, romanticImages } from "@/lib/constants";
+import { copyPlanToClipboard, formatPlanDate, useDatePlan } from "@/lib/date-plan";
+import { WHATSAPP_LINK as CONTACT_LINK, romanticImages } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 export function CelebrationExperience() {
   const { plan } = useDatePlan();
   const hasPlan = Boolean(plan.date && plan.time);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    const ok = await copyPlanToClipboard(plan);
+    if (ok) {
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
+    }
+  };
 
   return (
     <PageTransition className="relative z-10 flex min-h-screen items-center justify-center px-4 py-16 sm:px-6">
@@ -43,7 +53,16 @@ export function CelebrationExperience() {
               <Heart className="h-10 w-10 fill-blush-300 text-blush-500" />
             </motion.div>
 
-            <p className="text-2xl text-slate-700 dark:text-slate-200">You just made my day.</p>
+            <p className="text-2xl text-slate-700 dark:text-slate-200">
+              {plan.name ? (
+                <>
+                  Thank you <span className="font-semibold text-rose-700 dark:text-rose-300">{plan.name}</span> — you{' '}
+                  just made my day.
+                </>
+              ) : (
+                "You just made my day."
+              )}
+            </p>
             <p className="text-base text-slate-500 dark:text-slate-400">
               Now text me immediately {"\u{1F60C}"}
             </p>
@@ -61,7 +80,26 @@ export function CelebrationExperience() {
                 Our Date
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div
+                  className={cn(
+                    "flex items-start gap-3 rounded-2xl border border-white/70 bg-white/75 p-4 text-left",
+                    "dark:border-white/5 dark:bg-white/5"
+                  )}
+                >
+                  <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-pink-100 to-rose-200 text-rose-600 dark:from-pink-500/25 dark:to-rose-500/20 dark:text-rose-200">
+                    <User className="h-5 w-5" strokeWidth={1.8} />
+                  </span>
+                  <div className="space-y-1">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-rose-500 dark:text-rose-300">
+                      Name
+                    </p>
+                    <p className="font-[family-name:var(--font-display)] text-lg text-slate-800 dark:text-slate-100 sm:text-xl">
+                      {plan.name || "—"}
+                    </p>
+                  </div>
+                </div>
+
                 <div
                   className={cn(
                     "flex items-start gap-3 rounded-2xl border border-white/70 bg-white/75 p-4 text-left",
@@ -107,14 +145,42 @@ export function CelebrationExperience() {
             </motion.div>
           ) : null}
 
-          <AnimatedButton
-            type="button"
-            onClick={() => window.open(WHATSAPP_LINK, "_blank", "noopener,noreferrer")}
-            icon={<MessageCircleHeart className="h-4 w-4" />}
-            className="mx-auto"
-          >
-            Open WhatsApp
-          </AnimatedButton>
+          <div className="flex flex-col items-center gap-3">
+            {hasPlan ? (
+              <button
+                type="button"
+                onClick={handleCopy}
+                className={cn(
+                  "inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold shadow-sm transition",
+                  "border-rose-200/70 bg-white/80 text-rose-700",
+                  "hover:bg-white hover:-translate-y-0.5 hover:shadow-md",
+                  "dark:border-white/10 dark:bg-white/5 dark:text-rose-200 dark:hover:bg-white/10",
+                  "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-rose-200/60"
+                )}
+              >
+                {copied ? (
+                  <>
+                    <Check className="h-4 w-4 text-emerald-500" />
+                    <span className="text-emerald-600 dark:text-emerald-300">Copied! Paste in DM 💌</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-4 w-4" />
+                    <span>Copy date & time</span>
+                  </>
+                )}
+              </button>
+            ) : null}
+
+            <AnimatedButton
+              type="button"
+              onClick={() => window.open(CONTACT_LINK, "_blank", "noopener,noreferrer")}
+              icon={<Instagram className="h-4 w-4" />}
+              className="mx-auto"
+            >
+              Open Instagram
+            </AnimatedButton>
+          </div>
         </div>
       </GlassCard>
     </PageTransition>

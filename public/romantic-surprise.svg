@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 900" width="900" height="900">
+  <defs>
+    <linearGradient id="surpriseBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fef3c7"/>
+      <stop offset="100%" stop-color="#fde2e4"/>
+    </linearGradient>
+    <linearGradient id="heartGrad2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff86bb"/>
+      <stop offset="100%" stop-color="#d94689"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="900" fill="url(#surpriseBg)"/>
+  <g transform="translate(450 480)">
+    <ellipse cx="0" cy="30" rx="210" ry="160" fill="#fff" opacity="0.7"/>
+    <path d="M0 40 C -80 -30 -125 -85 -90 -120 C -62 -148 -27 -130 0 -85 C 27 -130 62 -148 90 -120 C 125 -85 80 -30 0 40 Z"
+      fill="url(#heartGrad2)" stroke="#fff" stroke-width="5" stroke-linejoin="round"/>
+    <circle cx="-55" cy="-75" r="16" fill="#fff"/>
+    <circle cx="-50" cy="-73" r="8" fill="#1f2937"/>
+    <circle cx="-47" cy="-76" r="3" fill="#fff"/>
+    <circle cx="55" cy="-75" r="16" fill="#fff"/>
+    <circle cx="60" cy="-73" r="8" fill="#1f2937"/>
+    <circle cx="63" cy="-76" r="3" fill="#fff"/>
+    <path d="M -18 -20 Q 0 -40 18 -20" stroke="#1f2937" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M -42 -10 Q -40 2 -32 4" stroke="#f472b6" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.7"/>
+    <path d="M 42 -10 Q 40 2 32 4" stroke="#f472b6" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.7"/>
+  </g>
+  <g fill="#fbbf24">
+    <path d="M 150 200 l 12 35 l 35 12 l -35 12 l -12 35 l -12 -35 l -35 -12 l 35 -12 z"/>
+    <path d="M 780 280 l 9 26 l 26 9 l -26 9 l -9 26 l -9 -26 l -26 -9 l 26 -9 z"/>
+    <path d="M 720 720 l 10 30 l 30 10 l -30 10 l -10 30 l -10 -30 l -30 -10 l 30 -10 z"/>
+    <path d="M 130 680 l 8 22 l 22 8 l -22 8 l -8 22 l -8 -22 l -22 -8 l 22 -8 z"/>
+  </g>
+  <g fill="#fb7185" opacity="0.8">
+    <path d="M210 320 C 190 290 220 260 250 270 C 265 245 295 250 295 270 C 325 260 335 295 315 315 C 310 350 270 355 255 330 C 230 360 195 345 210 320 Z"/>
+    <path d="M660 560 C 640 530 670 500 700 510 C 715 485 745 490 745 510 C 775 500 785 535 765 555 C 760 590 720 595 705 570 C 680 600 645 585 660 560 Z"/>
+  </g>
+  <g fill="#a78bfa" opacity="0.75">
+    <g transform="translate(240 740)">
+      <circle cx="0" cy="0" r="10"/>
+      <circle cx="-14" cy="-8" r="8.5"/>
+      <circle cx="14" cy="-8" r="8.5"/>
+      <circle cx="-9" cy="-20" r="7.5"/>
+      <circle cx="9" cy="-20" r="7.5"/>
+      <circle cx="0" cy="-30" r="7"/>
+    </g>
+    <g transform="translate(700 200)">
+      <circle cx="0" cy="0" r="9"/>
+      <circle cx="-12" cy="-7" r="7.5"/>
+      <circle cx="12" cy="-7" r="7.5"/>
+      <circle cx="-8" cy="-18" r="7"/>
+      <circle cx="8" cy="-18" r="7"/>
+      <circle cx="0" cy="-27" r="6"/>
+    </g>
+  </g>
+</svg>

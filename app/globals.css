@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #fff6fb;
+  --foreground: #1f1b2e;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #140d1c;
+    --foreground: #f5e9ff;
+  }
+}
+
+@layer utilities {
+  @keyframes ripple {
+    0% {
+      transform: scale(0);
+      opacity: 0.65;
+    }
+    100% {
+      transform: scale(2.2);
+      opacity: 0;
+    }
+  }
+
+  @keyframes heartFloat {
+    0%, 100% {
+      transform: translateY(0) rotate(-4deg);
+      opacity: 0.55;
+    }
+    50% {
+      transform: translateY(-22px) rotate(4deg);
+      opacity: 0.95;
+    }
+  }
+}

@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 820" width="900" height="820">
+  <defs>
+    <linearGradient id="celebrateBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fce7f3"/>
+      <stop offset="50%" stop-color="#fbcfe8"/>
+      <stop offset="100%" stop-color="#ddd6fe"/>
+    </linearGradient>
+    <radialGradient id="heartGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ff7db8" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#ff7db8" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bigHeartGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fb7185"/>
+      <stop offset="50%" stop-color="#f43f5e"/>
+      <stop offset="100%" stop-color="#e11d48"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="820" fill="url(#celebrateBg)"/>
+  <ellipse cx="450" cy="410" rx="380" ry="320" fill="url(#heartGlow)"/>
+  <g transform="translate(450 420)">
+    <ellipse cx="0" cy="0" rx="260" ry="210" fill="#fff" opacity="0.55"/>
+    <path d="M0 80 C -130 -30 -200 -115 -145 -170 C -108 -210 -58 -188 0 -115 C 58 -188 108 -210 145 -170 C 200 -115 130 -30 0 80 Z"
+      fill="url(#bigHeartGrad)" stroke="#fff" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M -85 -120 Q -100 -155 -55 -165" stroke="#fff" stroke-width="8" stroke-linecap="round" fill="none" opacity="0.7"/>
+    <path d="M -60 -95 Q -72 -112 -48 -112" stroke="#fff" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.6"/>
+  </g>
+  <g stroke-linecap="round" fill="none" stroke-width="4">
+    <path d="M 180 180 C 220 150 250 200 280 180" stroke="#fb7185" stroke-width="3"/>
+    <path d="M 720 200 C 755 160 780 220 820 195" stroke="#a78bfa" stroke-width="3"/>
+    <path d="M 140 650 C 175 625 205 675 245 655" stroke="#f59e0b" stroke-width="3"/>
+    <path d="M 680 640 C 720 610 748 670 790 648" stroke="#10b981" stroke-width="3"/>
+  </g>
+  <g>
+    <circle cx="210" cy="300" r="6" fill="#f472b6"/>
+    <circle cx="250" cy="255" r="4" fill="#a78bfa"/>
+    <circle cx="690" cy="320" r="5" fill="#fbbf24"/>
+    <circle cx="740" cy="270" r="4.5" fill="#fb7185"/>
+    <circle cx="180" cy="540" r="5.5" fill="#60a5fa"/>
+    <circle cx="240" cy="590" r="3.5" fill="#34d399"/>
+    <circle cx="710" cy="520" r="6" fill="#f472b6"/>
+    <circle cx="760" cy="580" r="4" fill="#f59e0b"/>
+    <circle cx="450" cy="130" r="7" fill="#fb7185"/>
+    <circle cx="430" cy="710" r="6" fill="#a78bfa"/>
+    <circle cx="480" cy="700" r="5" fill="#fbbf24"/>
+  </g>
+  <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 130 120 l 8 18 l 18 8 l -18 8 l -8 18 l -8 -18 l -18 -8 l 18 -8 z" stroke="#fbbf24" stroke-width="2" fill="#fde68a" opacity="0.9"/>
+    <path d="M 800 100 l 7 15 l 15 7 l -15 7 l -7 15 l -7 -15 l -15 -7 l 15 -7 z" stroke="#fb7185" stroke-width="2" fill="#fecdd3" opacity="0.9"/>
+    <path d="M 90 740 l 7 15 l 15 7 l -15 7 l -7 15 l -7 -15 l -15 -7 l 15 -7 z" stroke="#a78bfa" stroke-width="2" fill="#ddd6fe" opacity="0.9"/>
+    <path d="M 820 720 l 8 18 l 18 8 l -18 8 l -8 18 l -8 -18 l -18 -8 l 18 -8 z" stroke="#10b981" stroke-width="2" fill="#a7f3d0" opacity="0.9"/>
+  </g>
+  <g stroke="#fff" stroke-width="2" opacity="0.7">
+    <path d="M 330 160 l 10 10 M 560 170 l 10 10 M 300 660 l 10 10 M 570 640 l 10 10" stroke-linecap="round"/>
+    <path d="M 360 150 l -10 10 M 590 160 l -10 10 M 330 650 l -10 10 M 600 630 l -10 10" stroke-linecap="round"/>
+  </g>
+</svg>
